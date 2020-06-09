@@ -135,7 +135,10 @@ init = function (uid, cid) {
 
 process.on('SIGINT', function () {
     console.log("\nGracefully stoping worker from SIGINT (Ctrl+C)");
-    console.log("Connection: " + mointer.results.connection + " Receive Msg: " + mointer.results.receiveMsg);
+    console.log("\nConnection: " + mointer.results.connection);
+    console.log("\nConnection Closed: " + mointer.results.disconnection);
+    console.log("\nConnection Error: " + mointer.results.errors);
+    console.log("\nReceive Msg: " + mointer.results.receiveMsg);
     setTimeout(function () {
         process.exit();
     }, 3000);
