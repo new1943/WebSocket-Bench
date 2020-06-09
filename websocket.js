@@ -4,7 +4,7 @@ var WebSocket = require('ws'),
 Moniter = require("./monitor");
 
 var cwd = process.cwd();
-var size = 20;
+var size = 5000;
 var host = "ws://49.233.252.136:8090/chat";
 var sleep = 10;
 var index = 0;
