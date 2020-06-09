@@ -1,12 +1,11 @@
 var WebSocket = require('ws'),
     ProtoBuf = require("protobufjs"),
-    ByteBuffer = require("bytebuffer");
-Moniter = require("./monitor");
+    ByteBuffer = require("bytebuffer"),
+    Program = require('commander'),
+    Moniter = require("./monitor");
 
 var cwd = process.cwd();
-var size = 5000;
 var host = "ws://49.233.252.136:8090/chat";
-var sleep = 10;
 var index = 0;
 var builder = ProtoBuf.loadProtoFile(__dirname + '/auth.proto');
 var Auth = builder.build('Auth');
@@ -16,6 +15,23 @@ var mointer = new Moniter();
 const rawHeaderLen = 16;
 const packetOffset = 0, headerOffset = 4, verOffset = 6, opOffset = 8, seqOffset = 12;
 const opAuth = 1, opAuthReply = 2, opHeartbeat = 3, opHeartbeatReply = 4, opMessage = 5, opMessageReply = 6;
+
+Program
+    .version('0.0.1')
+    .usage('[Option] <server>')
+    .option('-a, --amount <n>', 'Total number of persistent connection, Default to 100', parseInt)
+    .option('-s, --sleep <n>', 'Connection sleep time, Default to 10', parseInt)
+    .parse(process.argv);
+
+var server = Program.args[0];
+
+if (!Program.amount) {
+    Program.amount = 100;
+}
+
+if (!Program.sleep) {
+    Program.sleep = 10;
+}
 
 var ab2str = function (buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
@@ -32,18 +48,18 @@ var mergeArrayBuffer = function (ab1, ab2) {
 
 
 setInterval(function () {
-    if (index < size) {
+    if (index < Program.amount) {
         uid = index;
         cid = index;
         init(uid, cid);
         index++;
     }
-}, sleep);
+}, Program.sleep);
 
 console.log("Start Test WebSocket Bench....");
 
 init = function (uid, cid) {
-    var ws = new WebSocket(host);
+    var ws = new WebSocket(server);
     ws.binaryType = 'arraybuffer';
 
     var heartbeat = function () {
