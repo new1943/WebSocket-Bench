@@ -5,7 +5,7 @@ var WebSocket = require('ws'),
 
 var cwd = process.cwd();
 var size = 20;
-var host = "ws://127.0.0.1:8090/chat";
+var host = "ws://49.233.252.136:8090/chat";
 var sleep = 10;
 var index = 0;
 var builder = ProtoBuf.loadProtoFile(__dirname + '/auth.proto');
