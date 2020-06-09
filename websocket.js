@@ -60,7 +60,7 @@ init = function (uid, cid) {
     ws.onopen = function () {
         // Auth
         var req = new AuthReq();
-        req.uid = index;
+        req.uid = uid;
         req.room_id = '1001';
         req.platform = 'ios';
 
@@ -73,7 +73,7 @@ init = function (uid, cid) {
         headerView.setInt32(opOffset, opAuth);
         headerView.setInt32(seqOffset, 1);
         ws.send(mergeArrayBuffer(headerBuf, bodyBuf));
-        console.log(index + ' Connected');
+        console.log(cid + ' Connected');
         mointer.connection();
     };
 
