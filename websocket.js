@@ -1,7 +1,7 @@
 var WebSocket = require('ws'),
     ProtoBuf = require("protobufjs"),
     ByteBuffer = require("bytebuffer");
-    Moniter = require("./monitor");
+Moniter = require("./monitor");
 
 var cwd = process.cwd();
 var size = 20;
@@ -73,7 +73,7 @@ init = function (uid, cid) {
         headerView.setInt32(opOffset, opAuth);
         headerView.setInt32(seqOffset, 1);
         ws.send(mergeArrayBuffer(headerBuf, bodyBuf));
-        console.log(index+' Connected');
+        console.log(index + ' Connected');
         mointer.connection();
     };
 
@@ -95,10 +95,10 @@ init = function (uid, cid) {
                 var packetView = dataView;
                 var msg = data;
                 var msgBody;
-                for (var offset=0; offset<msg.byteLength; offset+=packetLen) {
+                for (var offset = 0; offset < msg.byteLength; offset += packetLen) {
                     packetLen = packetView.getInt32(offset);
-                    headerLen = packetView.getInt16(offset+headerOffset);
-                    msgBody = msg.slice(offset+headerLen, offset+packetLen);
+                    headerLen = packetView.getInt16(offset + headerOffset);
+                    msgBody = msg.slice(offset + headerLen, offset + packetLen);
                     console.log(ab2str(msgBody));
                 }
                 mointer.receiveMsg();
@@ -119,5 +119,8 @@ init = function (uid, cid) {
 
 process.on('SIGINT', function () {
     console.log("\nGracefully stoping worker from SIGINT (Ctrl+C)");
-    console.log("Receive Msg: "+mointer.results.receiveMsg);
+    console.log("Connection: " + mointer.results.connection + " Receive Msg: " + mointer.results.receiveMsg);
+    setTimeout(function () {
+        process.exit();
+    }, 3000);
 });
