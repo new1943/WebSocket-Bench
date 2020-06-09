@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package Auth;
+
+message AuthReq {
+    uint32 uid = 1;
+    string key = 2;
+    string room_id = 3;
+    string platform = 4;
+}
+
+message AuthData {
+    string key = 1;
+}
+
+message AuthResp {
+    uint32 code = 1;
+    string message = 2;
+    AuthData data = 3;
+}
+
