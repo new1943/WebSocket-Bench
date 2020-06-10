@@ -5,7 +5,7 @@ var WebSocket = require('ws'),
     Moniter = require("./monitor");
 
 var cwd = process.cwd();
-var host = "ws://49.233.252.136:8090/chat";
+var host = "ws://127.0.0.1:8090/chat";
 var index = 0;
 var builder = ProtoBuf.loadProtoFile(__dirname + '/auth.proto');
 var Auth = builder.build('Auth');
@@ -137,12 +137,12 @@ init = function (uid, cid) {
     };
 
     ws.onclose = function (error) {
-        console.log(error.toString() + ';  Connection Closed');
+        console.error('Connection Closed' , error);
         monitor.disconnection();
     };
 
     ws.onerror = function (error) {
-        console.log("Connection Error: " + error.toString());
+        console.error("Connection Error", error);
         monitor.errors();
     };
 }
