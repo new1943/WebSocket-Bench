@@ -10,7 +10,7 @@ var index = 0;
 var builder = ProtoBuf.loadProtoFile(__dirname + '/auth.proto');
 var Auth = builder.build('Auth');
 var AuthReq = Auth.AuthReq;
-var mointer = new Moniter();
+var monitor = new Moniter();
 
 const rawHeaderLen = 16;
 const packetOffset = 0, headerOffset = 4, verOffset = 6, opOffset = 8, seqOffset = 12;
@@ -21,6 +21,8 @@ Program
     .usage('[Option] <server>')
     .option('-a, --amount <n>', 'Total number of persistent connection, Default to 100', parseInt)
     .option('-s, --sleep <n>', 'Connection sleep time, Default to 10', parseInt)
+    .option('-r, --room <type>', 'Connect room, Default to 1000')
+    .option('-p, --platform <type>', 'Connect platform, Default to ios')
     .parse(process.argv);
 
 var server = Program.args[0];
@@ -31,6 +33,14 @@ if (!Program.amount) {
 
 if (!Program.sleep) {
     Program.sleep = 10;
+}
+
+if (!Program.room) {
+    Program.room = '1000';
+}
+
+if (!Program.platform) {
+    Program.platform = 'ios';
 }
 
 var ab2str = function (buf) {
@@ -77,8 +87,8 @@ init = function (uid, cid) {
         // Auth
         var req = new AuthReq();
         req.uid = uid;
-        req.room_id = '1001';
-        req.platform = 'ios';
+        req.room_id = Program.room;
+        req.platform = Program.platform;
 
         var headerBuf = new ArrayBuffer(rawHeaderLen);
         var headerView = new DataView(headerBuf, 0);
@@ -90,7 +100,7 @@ init = function (uid, cid) {
         headerView.setInt32(seqOffset, 1);
         ws.send(mergeArrayBuffer(headerBuf, bodyBuf));
         console.log(cid + ' Connected');
-        mointer.connection();
+        monitor.connection();
     };
 
     ws.onmessage = function (evt) {
@@ -107,6 +117,10 @@ init = function (uid, cid) {
                 heartbeat();
                 setInterval(heartbeat, 30 * 1000);
                 break;
+            case opHeartbeatReply:
+                // 心跳
+                monitor.heartbeat();
+                break;
             case opMessageReply:
                 var packetView = dataView;
                 var msg = data;
@@ -117,28 +131,33 @@ init = function (uid, cid) {
                     msgBody = msg.slice(offset + headerLen, offset + packetLen);
                     console.log(ab2str(msgBody));
                 }
-                mointer.receiveMsg();
+                monitor.receiveMsg();
                 break;
         }
     };
 
     ws.onclose = function (error) {
         console.log(error.toString() + ';  Connection Closed');
-        mointer.disconnection();
+        monitor.disconnection();
     };
 
     ws.onerror = function (error) {
         console.log("Connection Error: " + error.toString());
-        mointer.errors();
+        monitor.errors();
     };
 }
 
 process.on('SIGINT', function () {
     console.log("\nGracefully stoping worker from SIGINT (Ctrl+C)");
-    console.log("\nConnection: " + mointer.results.connection);
-    console.log("\nConnection Closed: " + mointer.results.disconnection);
-    console.log("\nConnection Error: " + mointer.results.errors);
-    console.log("\nReceive Msg: " + mointer.results.receiveMsg);
+    console.log("\nRoom: " + Program.room);
+    console.log("\nPlatform: " + Program.platform);
+    console.log("\nAmount: " + Program.amount);
+    console.log("\nConnection: " + monitor.results.connection);
+    console.log("\nConnection Closed: " + monitor.results.disconnection);
+    console.log("\nConnection Error: " + monitor.results.errors);
+    console.log("\nReceive Msg: " + monitor.results.receiveMsg);
+    console.log("\nHeartbeat: " + monitor.results.heartbeat);
+    console.log("\nMsg Count: " + monitor.messageCounter);
     setTimeout(function () {
         process.exit();
     }, 3000);

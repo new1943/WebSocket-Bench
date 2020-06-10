@@ -9,7 +9,8 @@ var Monitor = function () {
     connection    : 0,
     disconnection : 0,
     errors        : 0,
-    receiveMsg       : 0,
+    receiveMsg    : 0,
+    heartbeat     : 0,
   };
 
   this.messageCounter = 0;
@@ -35,6 +36,11 @@ Monitor.prototype.errors = function () {
 
 Monitor.prototype.receiveMsg = function () {
   this.results.receiveMsg++;
+  this.messageCounter++;
+};
+
+Monitor.prototype.heartbeat = function () {
+  this.results.heartbeat++;
   this.messageCounter++;
 };
 
