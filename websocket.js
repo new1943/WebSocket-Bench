@@ -69,11 +69,13 @@ setInterval(function () {
 console.log("Start Test WebSocket Bench....");
 
 setInterval(function () {
+    console.log("\n-------------------------------------------");
     console.log("\nConnection: " + monitor.results.connection);
     console.log("\nConnection Closed: " + monitor.results.disconnection);
     console.log("\nConnection Error: " + monitor.results.errors);
     console.log("\nReceive Msg: " + monitor.results.receiveMsg);
     console.log("\nMsg Count: " + monitor.messageCounter);
+    console.log("\n");
     monitor.reset();
 }, 1000);
 
