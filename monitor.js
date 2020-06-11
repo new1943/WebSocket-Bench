@@ -44,6 +44,10 @@ Monitor.prototype.heartbeat = function () {
   this.messageCounter++;
 };
 
+Monitor.prototype.reset = function() {
+  this.results.receiveMsg = 0;
+}
+
 
 /**
  * Merge metrics

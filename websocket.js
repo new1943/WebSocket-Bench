@@ -68,6 +68,15 @@ setInterval(function () {
 
 console.log("Start Test WebSocket Bench....");
 
+setInterval(function () {
+    console.log("\nConnection: " + monitor.results.connection);
+    console.log("\nConnection Closed: " + monitor.results.disconnection);
+    console.log("\nConnection Error: " + monitor.results.errors);
+    console.log("\nReceive Msg: " + monitor.results.receiveMsg);
+    console.log("\nMsg Count: " + monitor.messageCounter);
+    monitor.reset();
+}, 1000);
+
 init = function (uid, cid) {
     var ws = new WebSocket(server);
     ws.binaryType = 'arraybuffer';
@@ -99,7 +108,7 @@ init = function (uid, cid) {
         headerView.setInt32(opOffset, opAuth);
         headerView.setInt32(seqOffset, 1);
         ws.send(mergeArrayBuffer(headerBuf, bodyBuf));
-        console.log(cid + ' Connected');
+        // console.log(cid + ' Connected');
         monitor.connection();
     };
 
@@ -129,7 +138,7 @@ init = function (uid, cid) {
                     packetLen = packetView.getInt32(offset);
                     headerLen = packetView.getInt16(offset + headerOffset);
                     msgBody = msg.slice(offset + headerLen, offset + packetLen);
-                    console.log(ab2str(msgBody));
+                    // console.log(ab2str(msgBody));
                 }
                 monitor.receiveMsg();
                 break;
