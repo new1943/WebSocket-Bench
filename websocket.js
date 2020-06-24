@@ -8,8 +8,7 @@ var cwd = process.cwd();
 var host = "ws://127.0.0.1:8090/chat";
 var index = 0;
 var builder = ProtoBuf.loadProtoFile(__dirname + '/auth.proto');
-var Auth = builder.build('Auth');
-var AuthReq = Auth.AuthReq;
+var AuthReq = builder.build('Req');
 var monitor = new Moniter();
 
 const rawHeaderLen = 16;
@@ -68,16 +67,16 @@ setInterval(function () {
 
 console.log("Start Test WebSocket Bench....");
 
-setInterval(function () {
-    console.log("\n-------------------------------------------");
-    console.log("\nConnection: " + monitor.results.connection);
-    console.log("\nConnection Closed: " + monitor.results.disconnection);
-    console.log("\nConnection Error: " + monitor.results.errors);
-    console.log("\nReceive Msg: " + monitor.results.receiveMsg);
-    console.log("\nMsg Count: " + monitor.messageCounter);
-    console.log("\n");
-    monitor.reset();
-}, 1000);
+// setInterval(function () {
+//     console.log("\n-------------------------------------------");
+//     console.log("\nConnection: " + monitor.results.connection);
+//     console.log("\nConnection Closed: " + monitor.results.disconnection);
+//     console.log("\nConnection Error: " + monitor.results.errors);
+//     console.log("\nReceive Msg: " + monitor.results.receiveMsg);
+//     console.log("\nMsg Count: " + monitor.messageCounter);
+//     console.log("\n");
+//     monitor.reset();
+// }, 1000);
 
 init = function (uid, cid) {
     var ws = new WebSocket(server);
@@ -97,8 +96,8 @@ init = function (uid, cid) {
     ws.onopen = function () {
         // Auth
         var req = new AuthReq();
-        req.uid = uid;
-        req.room_id = Program.room;
+        req.uid = uid+'';
+        req.room = Program.room;
         req.platform = Program.platform;
 
         var headerBuf = new ArrayBuffer(rawHeaderLen);
@@ -116,12 +115,16 @@ init = function (uid, cid) {
 
     ws.onmessage = function (evt) {
         var data = evt.data;
-        var dataView = new DataView(data, 0);
-        var packetLen = dataView.getInt32(packetOffset);
-        var headerLen = dataView.getInt16(headerOffset);
-        var ver = dataView.getInt16(verOffset);
-        var op = dataView.getInt32(opOffset);
-        var seq = dataView.getInt32(seqOffset);
+        var op = -1;
+        if(data.byteLength >= 16) {
+            var dataView = new DataView(data, 0);
+            var packetLen = dataView.getInt32(packetOffset);
+            var headerLen = dataView.getInt16(headerOffset);
+            var ver = dataView.getInt16(verOffset);
+            op = dataView.getInt32(opOffset);
+            var seq = dataView.getInt32(seqOffset);
+        }
+
 
         switch (op) {
             case opAuthReply:
@@ -140,10 +143,12 @@ init = function (uid, cid) {
                     packetLen = packetView.getInt32(offset);
                     headerLen = packetView.getInt16(offset + headerOffset);
                     msgBody = msg.slice(offset + headerLen, offset + packetLen);
-                    // console.log(ab2str(msgBody));
+                    console.log(cid+' receive msg: '+ab2str(msgBody));
+                    monitor.receiveMsg();
                 }
-                monitor.receiveMsg();
                 break;
+            default:
+                console.log('receive empty package');
         }
     };
 
