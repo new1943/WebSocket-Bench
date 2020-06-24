@@ -68,16 +68,16 @@ setInterval(function () {
 
 console.log("Start Test WebSocket Bench....");
 
-setInterval(function () {
-    console.log("\n-------------------------------------------");
-    console.log("\nConnection: " + monitor.results.connection);
-    console.log("\nConnection Closed: " + monitor.results.disconnection);
-    console.log("\nConnection Error: " + monitor.results.errors);
-    console.log("\nReceive Msg: " + monitor.results.receiveMsg);
-    console.log("\nMsg Count: " + monitor.messageCounter);
-    console.log("\n");
-    monitor.reset();
-}, 1000);
+// setInterval(function () {
+//     console.log("\n-------------------------------------------");
+//     console.log("\nConnection: " + monitor.results.connection);
+//     console.log("\nConnection Closed: " + monitor.results.disconnection);
+//     console.log("\nConnection Error: " + monitor.results.errors);
+//     console.log("\nReceive Msg: " + monitor.results.receiveMsg);
+//     console.log("\nMsg Count: " + monitor.messageCounter);
+//     console.log("\n");
+//     monitor.reset();
+// }, 1000);
 
 init = function (uid, cid) {
     var ws = new WebSocket(server);
@@ -137,12 +137,13 @@ init = function (uid, cid) {
                 var msg = data;
                 var msgBody;
                 for (var offset = 0; offset < msg.byteLength; offset += packetLen) {
-                    packetLen = packetView.getInt32(offset);
-                    headerLen = packetView.getInt16(offset + headerOffset);
-                    msgBody = msg.slice(offset + headerLen, offset + packetLen);
+                    // packetLen = packetView.getInt32(offset);
+                    // headerLen = packetView.getInt16(offset + headerOffset);
+                    // msgBody = msg.slice(offset + headerLen, offset + packetLen);
                     // console.log(ab2str(msgBody));
+                    monitor.receiveMsg();
+                    console.log("\nReceive Msg: " + monitor.results.receiveMsg);
                 }
-                monitor.receiveMsg();
                 break;
         }
     };
