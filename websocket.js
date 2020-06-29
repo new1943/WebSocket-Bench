@@ -73,11 +73,10 @@ setInterval(function () {
     console.log("\nConnection: " + monitor.results.connection);
     console.log("\nConnection Closed: " + monitor.results.disconnection);
     console.log("\nConnection Error: " + monitor.results.errors);
-    console.log("\nReceive Msg: " + monitor.results.receiveMsg);
-    console.log("\nMsg Count: " + monitor.messageCounter);
+    console.log("\nPer Second Msg: " + monitor.results.receiveMsg);
     console.log("\n");
     monitor.reset();
-}, 1000*30);
+}, 1000);
 
 init = function (uid, cid) {
     var ws = new WebSocket(server);
