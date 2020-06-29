@@ -69,7 +69,7 @@ setInterval(function () {
 console.log("Start Test WebSocket Bench....");
 
 setInterval(function () {
-    console.log("\n-------------------------------------------");
+    console.log("\n---------------------"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+"----------------------");
     console.log("\nConnection: " + monitor.results.connection);
     console.log("\nConnection Closed: " + monitor.results.disconnection);
     console.log("\nConnection Error: " + monitor.results.errors);
