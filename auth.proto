@@ -1,21 +1,29 @@
 syntax = "proto3";
 
-package Auth;
+option java_multiple_files = false;
+option java_package = "com.yibai.im.base.protobuf";
+option java_outer_classname = "AuthProto";
+// option optimize_for = LITE_RUNTIME;
 
-message AuthReq {
-    uint32 uid = 1;
+
+message Req {
+    string uid = 1;
     string key = 2;
-    string room_id = 3;
+    string room = 3;
     string platform = 4;
+    string server = 5;
 }
 
-message AuthData {
+message Data {
     string key = 1;
 }
 
-message AuthResp {
+message Resp {
     uint32 code = 1;
     string message = 2;
-    AuthData data = 3;
+    Data data = 3;
 }
 
+service AuthService {
+    rpc auth (Req) returns (Resp) {}
+}
